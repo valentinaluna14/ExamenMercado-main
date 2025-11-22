@@ -1,3 +1,5 @@
+// Archivo: src/main/java/org/example/service/MutantDetector.java
+
 package org.example.service;
 
 import org.springframework.stereotype.Service;
@@ -21,7 +23,7 @@ public class MutantDetector {
      * @throws IllegalArgumentException if the DNA is invalid (null, empty, not square, invalid characters).
      */
     public boolean isMutant(String[] dna) {
-        validateDna(dna);
+        validateDna(dna); // Ejecuta la validación robusta (Nuevos cambios aquí)
         int n = dna.length;
         char[][] matrix = convertToMatrix(dna);
 
@@ -31,9 +33,7 @@ public class MutantDetector {
         for (int row = 0; row < n; row++) {
             for (int col = 0; col < n; col++) {
 
-                // Only check directions if we haven't exceeded the count needed
-
-                // Horizontal
+                // Horizontal (Optimización: Boundary Checking)
                 if (col <= n - SEQUENCE_LENGTH) {
                     if (checkHorizontal(matrix, row, col)) {
                         sequenceCount++;
@@ -41,7 +41,7 @@ public class MutantDetector {
                     }
                 }
 
-                // Vertical
+                // Vertical (Optimización: Boundary Checking)
                 if (row <= n - SEQUENCE_LENGTH) {
                     if (checkVertical(matrix, row, col)) {
                         sequenceCount++;
@@ -49,7 +49,7 @@ public class MutantDetector {
                     }
                 }
 
-                // Diagonal Descending (\)
+                // Diagonal Descending (\) (Optimización: Boundary Checking)
                 if (row <= n - SEQUENCE_LENGTH && col <= n - SEQUENCE_LENGTH) {
                     if (checkDiagonalDescending(matrix, row, col)) {
                         sequenceCount++;
@@ -57,7 +57,7 @@ public class MutantDetector {
                     }
                 }
 
-                // Diagonal Ascending (/)
+                // Diagonal Ascending (/) (Optimización: Boundary Checking)
                 if (row >= SEQUENCE_LENGTH - 1 && col <= n - SEQUENCE_LENGTH) {
                     if (checkDiagonalAscending(matrix, row, col)) {
                         sequenceCount++;
@@ -76,6 +76,12 @@ public class MutantDetector {
         }
 
         int n = dna.length;
+
+        // CORRECCIÓN CLAVE: Asegurar que la matriz sea al menos 4x4
+        if (n < SEQUENCE_LENGTH) {
+            throw new IllegalArgumentException("DNA matrix size must be at least " + SEQUENCE_LENGTH + "x" + SEQUENCE_LENGTH);
+        }
+
         for (String row : dna) {
             if (row == null || row.length() != n) {
                 throw new IllegalArgumentException("DNA must be a square NxN matrix");
@@ -97,6 +103,7 @@ public class MutantDetector {
         return matrix;
     }
 
+    // Los métodos check* se mantienen como los tienes
     private boolean checkHorizontal(char[][] matrix, int row, int col) {
         char base = matrix[row][col];
         return base == matrix[row][col+1] &&

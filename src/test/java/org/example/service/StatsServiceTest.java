@@ -1,3 +1,5 @@
+// Archivo: src/test/java/org/example/service/StatsServiceTest.java
+
 package org.example.service;
 
 import org.example.dto.StatsResponse;
@@ -29,7 +31,7 @@ class StatsServiceTest {
 
         assertEquals(40, stats.getCount_mutant_dna());
         assertEquals(100, stats.getCount_human_dna());
-        assertEquals(0.4, stats.getRatio());
+        assertEquals(0.4, stats.getRatio(), 0.0001); // <-- CORRECCIÓN
     }
 
     @Test
@@ -41,7 +43,7 @@ class StatsServiceTest {
 
         assertEquals(40, stats.getCount_mutant_dna());
         assertEquals(0, stats.getCount_human_dna());
-        assertEquals(40.0, stats.getRatio()); // As per logic implemented
+        assertEquals(40.0, stats.getRatio(), 0.0001); // <-- CORRECCIÓN
     }
 
     @Test
@@ -53,6 +55,6 @@ class StatsServiceTest {
 
         assertEquals(0, stats.getCount_mutant_dna());
         assertEquals(0, stats.getCount_human_dna());
-        assertEquals(0.0, stats.getRatio());
+        assertEquals(0.0, stats.getRatio(), 0.0001); // <-- CORRECCIÓN
     }
 }
