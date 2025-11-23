@@ -5,6 +5,7 @@ package org.example.controller;
 import org.example.dto.StatsResponse;
 import org.example.service.MutantService;
 import org.example.service.StatsService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -124,4 +125,31 @@ class MutantControllerTest {
                 .andExpect(jsonPath("$.count_human_dna").value(100))
                 .andExpect(jsonPath("$.ratio").value(0.4));
     }
+    @Test
+    @DisplayName("POST /mutant should return 400 Bad Request when request body is empty")
+    void testCheckMutantRejectsEmptyBody() throws Exception {
+        // ACT & ASSERT
+        mockMvc.perform(post("/mutant")
+                                .contentType(MediaType.APPLICATION_JSON)
+                        // NO se incluye .content() → body vacío
+                )
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("GET /stats should return 200 OK even with no data in database")
+    void testGetStatsReturns200WithNoData() throws Exception {
+        // ARRANGE - BD vacía
+        StatsResponse emptyStats = new StatsResponse(0, 0, 0.0);
+        when(statsService.getStats()).thenReturn(emptyStats);
+
+        // ACT & ASSERT
+        mockMvc.perform(get("/stats")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.count_mutant_dna").value(0))
+                .andExpect(jsonPath("$.count_human_dna").value(0))
+                .andExpect(jsonPath("$.ratio").value(0.0));
+    }
+
 }

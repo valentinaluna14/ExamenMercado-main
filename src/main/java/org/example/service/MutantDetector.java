@@ -1,5 +1,3 @@
-// Archivo: src/main/java/org/example/service/MutantDetector.java
-
 package org.example.service;
 
 import org.springframework.stereotype.Service;

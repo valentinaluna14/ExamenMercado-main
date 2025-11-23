@@ -163,4 +163,177 @@ class MutantDetectorTest {
         };
         assertTrue(mutantDetector.isMutant(dna));
     }
+    @Test
+    @DisplayName("Should detect mutant with mixed sequence types")
+    void testMutantWithMixedSequences() {
+        String[] dna = {
+                "ATGCGA",
+                "CAGTGC",
+                "TTATGT",
+                "AGAAGG",
+                "CCCCTA",
+                "TCACTG"
+        };
+
+        assertTrue(mutantDetector.isMutant(dna));
+    }
+
+    @Test
+    @DisplayName("Should validate DNA with lowercase characters throws exception")
+    void testInvalidDnaWithLowercase() {
+        String[] dna = {
+                "atgcga",
+                "CAGTGC",
+                "TTATGT",
+                "AGAAGG",
+                "CCCCTA",
+                "TCACTG"
+        };
+
+        assertThrows(IllegalArgumentException.class,
+                () -> mutantDetector.isMutant(dna),
+                "Debe rechazar caracteres en minúscula");
+    }
+
+    @Test
+    @DisplayName("Should detect mutant with diagonal ascending in last rows")
+    void testMutantDiagonalAscendingLastRows() {
+        String[] dna = {
+                "ATGCGT",
+                "CAGTGA",
+                "TTATGA",
+                "AGAAGA",
+                "CCCCAA",
+                "TCACTA"
+        };
+
+        assertTrue(mutantDetector.isMutant(dna));
+    }
+
+    @Test
+    @DisplayName("Should handle DNA with exactly 2 sequences (boundary case)")
+    void testMutantWithExactlyTwoSequences() {
+        String[] dna = {
+                "AAAAGT",
+                "CAGTGC",
+                "TTATGT",
+                "AGACGG",
+                "GCGTCA",
+                "TTTTCA"
+        };
+
+        assertTrue(mutantDetector.isMutant(dna),
+                "Debe detectar mutante con exactamente 2 secuencias");
+    }
+
+    @Test
+    @DisplayName("Should detect mutant in large DNA matrix (10x10)")
+    void testMutantWithLargeDna() {
+        String[] dna = {
+                "ATGCGAATGC",
+                "CAGTGCCAGT",
+                "TTATGTTTAT",
+                "AGAAGGATAA",
+                "CCCCTACCCC",
+                "TCACTGTCAC",
+                "ATGCGAATGC",
+                "CAGTGCCAGT",
+                "TTATGTTTAT",
+                "AGAAGGATAA"
+        };
+
+        assertTrue(mutantDetector.isMutant(dna),
+                "Debe detectar mutante en matriz 10x10 con múltiples secuencias horizontales");
+    }
+
+    @Test
+    @DisplayName("Should detect mutant when all characters are the same")
+    void testMutantAllSameCharacter() {
+        String[] dna = {
+                "AAAAAA",
+                "AAAAAA",
+                "AAAAAA",
+                "AAAAAA",
+                "AAAAAA",
+                "AAAAAA"
+        };
+
+        assertTrue(mutantDetector.isMutant(dna),
+                "Matriz con todos caracteres iguales debe ser mutante (múltiples secuencias)");
+    }
+
+    @Test
+    @DisplayName("Should return false for small human DNA (4x4 without sequences)")
+    void testNotMutantSmallDna() {
+        String[] dna = {
+                "ATGC",
+                "CAGT",
+                "TTAT",
+                "AGAC"
+        };
+
+        assertFalse(mutantDetector.isMutant(dna),
+                "Matriz 4x4 sin secuencias debe retornar false");
+    }
+
+    @Test
+    @DisplayName("Should throw exception for matrix smaller than 4x4")
+    void testNotMutantWithTooSmallDna() {
+        String[] dna = {
+                "ATG",
+                "CAG",
+                "TTA"
+        };
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> mutantDetector.isMutant(dna),
+                "Debe lanzar excepción para matriz menor a 4x4"
+        );
+
+        assertTrue(exception.getMessage().contains("al menos 4x4"),
+                "El mensaje debe indicar el tamaño mínimo requerido");
+    }
+
+    @Test
+    @DisplayName("Should throw exception when one row is null")
+    void testNotMutantWithNullRow() {
+        String[] dna = {
+                "ATGCGA",
+                null,  // Fila nula
+                "TTATGT",
+                "AGAAGG",
+                "CCCCTA",
+                "TCACTG"
+        };
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> mutantDetector.isMutant(dna),
+                "Debe lanzar excepción cuando una fila es null"
+        );
+
+        assertTrue(exception.getMessage().contains("cuadrada"),
+                "El mensaje debe mencionar que debe ser cuadrada");
+    }
+
+    @Test
+    @DisplayName("Should not count sequences longer than 4 as multiple sequences")
+    void testNotMutantWithSequenceLongerThanFour() {
+        String[] dna = {
+                "AAAAAA",
+                "CAGTGC",
+                "TTATGT",
+                "AGACGG",
+                "GCGTCA",
+                "TCACTG"
+        };
+
+
+        boolean result = mutantDetector.isMutant(dna);
+
+
+        assertTrue(result,
+                "Secuencia de 6 caracteres iguales debe contener múltiples secuencias de 4");
+    }
 }
