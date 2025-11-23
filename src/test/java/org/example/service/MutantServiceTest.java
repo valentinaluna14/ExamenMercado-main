@@ -28,9 +28,7 @@ class MutantServiceTest {
 
     @Test
     void analyzeDna_ShouldReturnCachedResult_WhenDnaExists() {
-        // Assuming a hash is calculated, but since it's private, we can't mock calculation easily.
-        // But calculateDnaHash is deterministic.
-        // We mock repository to return a record.
+
 
         String[] dna = {"AAAA", "CCCC", "TTTT", "GGGG"};
         DnaRecord record = new DnaRecord();

@@ -14,8 +14,8 @@ import org.example.validation.ValidDnaSequence;
 @Schema(description = "Request object containing the DNA sequence to verify")
 public class DnaRequest {
 
-    @NotNull(message = "DNA cannot be null")
-    @NotEmpty(message = "DNA cannot be empty")
+    @NotNull(message = "ADN no puede ser nulo")
+    @NotEmpty(message = "ADN no puede estar vacío")
     @ValidDnaSequence
     @Schema(description = "NxN DNA matrix", example = "[\"ATGCGA\",\"CAGTGC\",\"TTATGT\",\"AGAAGG\",\"CCCCTA\",\"TCACTG\"]", requiredMode = Schema.RequiredMode.REQUIRED)
     private String[] dna;

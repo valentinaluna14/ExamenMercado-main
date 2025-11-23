@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
         response.put("error", "Bad Request");
 
         // Collect all errors
-        StringBuilder message = new StringBuilder("Validation failed: ");
+        StringBuilder message = new StringBuilder("Validacion fallida: ");
         ex.getBindingResult().getAllErrors().forEach(error -> {
             message.append(error.getDefaultMessage()).append("; ");
         });

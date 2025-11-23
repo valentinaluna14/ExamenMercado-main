@@ -67,10 +67,9 @@ class MutantControllerTest {
 
     @Test
     void checkMutant_ShouldReturn400_WhenInvalidDna() throws Exception {
-        // CORRECCIÓN: Configurar el mock para lanzar IllegalArgumentException
+
         when(mutantService.analyzeDna(any())).thenThrow(new IllegalArgumentException("Invalid DNA character"));
 
-        // Invalid character X
         String jsonRequest = """
             {
               "dna": ["ATGXGA","CAGTGC","TTATGT","AGAAGG","CCCCTA","TCACTG"]
@@ -85,7 +84,7 @@ class MutantControllerTest {
 
     @Test
     void checkMutant_ShouldReturn400_WhenNotSquare() throws Exception {
-        // CORRECCIÓN: Configurar el mock para lanzar IllegalArgumentException
+
         when(mutantService.analyzeDna(any())).thenThrow(new IllegalArgumentException("DNA must be a square NxN matrix"));
 
         String jsonRequest = """
@@ -107,7 +106,7 @@ class MutantControllerTest {
               "dna": null
             }
             """;
-        // Esta prueba funciona sin mock porque falla en la validación @NotNull del DTO.
+
         mockMvc.perform(post("/mutant")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))

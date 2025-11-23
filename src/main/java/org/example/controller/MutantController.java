@@ -23,11 +23,11 @@ public class MutantController {
     private final StatsService statsService;
 
     @PostMapping("/mutant")
-    @Operation(summary = "Check if a human is a mutant")
+    @Operation(summary = "Checkea si un humano es mutante")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Is a Mutant"),
-            @ApiResponse(responseCode = "403", description = "Is a Human (Forbidden)"),
-            @ApiResponse(responseCode = "400", description = "Invalid DNA sequence")
+            @ApiResponse(responseCode = "200", description = "Es un mutante"),
+            @ApiResponse(responseCode = "403", description = "Es un Humano (Forbidden)"),
+            @ApiResponse(responseCode = "400", description = "Secuencia de ADN inválida")
     })
     public ResponseEntity<Void> checkMutant(@Validated @RequestBody DnaRequest request) {
         boolean isMutant = mutantService.analyzeDna(request.getDna());
@@ -35,7 +35,7 @@ public class MutantController {
     }
 
     @GetMapping("/stats")
-    @Operation(summary = "Get verification statistics")
+    @Operation(summary = "Obtener estadísticas de verificación")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Statistics retrieved successfully")
     })

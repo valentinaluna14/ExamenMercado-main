@@ -13,17 +13,8 @@ public class MutantDetector {
     private static final int MUTANT_THRESHOLD = 2;
     private static final Set<Character> VALID_BASES = Set.of('A', 'T', 'C', 'G');
 
-    /**
-     * Detects if the given DNA sequence belongs to a mutant.
-     * A mutant is defined as having more than one sequence of four identical letters
-     * obliquely, horizontally, or vertically.
-     *
-     * @param dna Array of strings representing the DNA matrix.
-     * @return true if mutant, false otherwise.
-     * @throws IllegalArgumentException if the DNA is invalid (null, empty, not square, invalid characters).
-     */
     public boolean isMutant(String[] dna) {
-        validateDna(dna); // Ejecuta la validación robusta (Nuevos cambios aquí)
+        validateDna(dna);
         int n = dna.length;
         char[][] matrix = convertToMatrix(dna);
 
@@ -33,7 +24,7 @@ public class MutantDetector {
         for (int row = 0; row < n; row++) {
             for (int col = 0; col < n; col++) {
 
-                // Horizontal (Optimización: Boundary Checking)
+
                 if (col <= n - SEQUENCE_LENGTH) {
                     if (checkHorizontal(matrix, row, col)) {
                         sequenceCount++;
@@ -41,7 +32,7 @@ public class MutantDetector {
                     }
                 }
 
-                // Vertical (Optimización: Boundary Checking)
+
                 if (row <= n - SEQUENCE_LENGTH) {
                     if (checkVertical(matrix, row, col)) {
                         sequenceCount++;
@@ -49,7 +40,7 @@ public class MutantDetector {
                     }
                 }
 
-                // Diagonal Descending (\) (Optimización: Boundary Checking)
+
                 if (row <= n - SEQUENCE_LENGTH && col <= n - SEQUENCE_LENGTH) {
                     if (checkDiagonalDescending(matrix, row, col)) {
                         sequenceCount++;
@@ -57,7 +48,6 @@ public class MutantDetector {
                     }
                 }
 
-                // Diagonal Ascending (/) (Optimización: Boundary Checking)
                 if (row >= SEQUENCE_LENGTH - 1 && col <= n - SEQUENCE_LENGTH) {
                     if (checkDiagonalAscending(matrix, row, col)) {
                         sequenceCount++;
@@ -72,23 +62,23 @@ public class MutantDetector {
 
     private void validateDna(String[] dna) {
         if (dna == null || dna.length == 0) {
-            throw new IllegalArgumentException("DNA cannot be null or empty");
+            throw new IllegalArgumentException("ADN no puede ser nulo o vacío");
         }
 
         int n = dna.length;
 
-        // CORRECCIÓN CLAVE: Asegurar que la matriz sea al menos 4x4
+
         if (n < SEQUENCE_LENGTH) {
-            throw new IllegalArgumentException("DNA matrix size must be at least " + SEQUENCE_LENGTH + "x" + SEQUENCE_LENGTH);
+            throw new IllegalArgumentException("La matriz de ADN debe ser de al menos " + SEQUENCE_LENGTH + "x" + SEQUENCE_LENGTH);
         }
 
         for (String row : dna) {
             if (row == null || row.length() != n) {
-                throw new IllegalArgumentException("DNA must be a square NxN matrix");
+                throw new IllegalArgumentException("La matriz de ADN debe ser cuadrada (NxN)");
             }
             for (char c : row.toCharArray()) {
                 if (!VALID_BASES.contains(c)) {
-                    throw new IllegalArgumentException("Invalid DNA character: " + c);
+                    throw new IllegalArgumentException("Caracter de ADN inválido: " + c);
                 }
             }
         }
@@ -103,7 +93,7 @@ public class MutantDetector {
         return matrix;
     }
 
-    // Los métodos check* se mantienen como los tienes
+
     private boolean checkHorizontal(char[][] matrix, int row, int col) {
         char base = matrix[row][col];
         return base == matrix[row][col+1] &&

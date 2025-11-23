@@ -14,6 +14,6 @@ public class SwaggerConfig {
                 .info(new Info()
                         .title("Mutant Detector API")
                         .version("1.0")
-                        .description("API to detect mutants based on DNA sequences."));
+                        .description("API que detecta mutantes basado en su secuencia de ADN."));
     }
 }

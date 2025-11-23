@@ -11,12 +11,12 @@ import lombok.NoArgsConstructor;
 @Schema(description = "Statistics of DNA verifications")
 public class StatsResponse {
 
-    @Schema(description = "Count of mutant DNA sequences found")
+    @Schema(description = "Cantidad de secuencias de ADN mutante encontradas")
     private long count_mutant_dna;
 
-    @Schema(description = "Count of human DNA sequences found")
+    @Schema(description = "Cantidad de secuencias de ADN humano encontradas")
     private long count_human_dna;
 
-    @Schema(description = "Ratio of mutants to humans")
+    @Schema(description = "Ratio entre ADN mutante y humano")
     private double ratio;
 }

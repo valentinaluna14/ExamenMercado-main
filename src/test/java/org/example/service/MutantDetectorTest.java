@@ -1,16 +1,9 @@
-// Archivo: src/test/java/org/example/service/MutantDetectorTest.java
-
 package org.example.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
-
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,8 +14,7 @@ class MutantDetectorTest {
     @Test
     @DisplayName("Should detect mutant with horizontal sequences (2 or more)")
     void isMutant_Horizontal() {
-        // Secuencia 1: AAAA en Fila 0
-        // Secuencia 2: TTTT en Fila 5
+
         String[] dna = {
                 "AAAAAT",
                 "CAGTGC",
@@ -37,8 +29,7 @@ class MutantDetectorTest {
     @Test
     @DisplayName("Should detect mutant with vertical sequences (2 or more)")
     void isMutant_Vertical() {
-        // Secuencia 1: AAAA en Columna 0 (Filas 0-3)
-        // Secuencia 2: GGGG en Columna 5 (Filas 2-5)
+
         String[] dna = {
                 "ATGCGA",
                 "ATGTGC",
@@ -53,15 +44,14 @@ class MutantDetectorTest {
     @Test
     @DisplayName("Should detect mutant with diagonal sequences (Forward-Descending)")
     void isMutant_Diagonal() {
-        // Secuencia 1: AAAA diagonal \
-        // Secuencia 2: GGGG horizontal
+
         String[] dna = {
                 "ATGCGA",
                 "CAGTGC",
                 "TTATGT",
                 "AGAAGG",
                 "CCCCTA",
-                "GGGGGG" // <-- Se corrigió para asegurar 2 secuencias
+                "GGGGGG"
         };
         assertTrue(mutantDetector.isMutant(dna));
     }
@@ -69,23 +59,22 @@ class MutantDetectorTest {
     @Test
     @DisplayName("Should detect mutant with both diagonal directions (Ascending / and Descending)")
     void isMutant_BothDiagonals() {
-        // Secuencia 1: AAAA diagonal \
-        // Secuencia 2: CCCC diagonal /
+
         String[] dna = {
-                "ATCCGA", // C en (0,2) para diagonal /
-                "CATAAC", // A en (1,1) para diagonal \
+                "ATCCGA",
+                "CATAAC",
                 "TTATTA",
                 "AGACAG",
-                "CCTATT", // C en (4,1) para diagonal /
-                "GGCGCT" // G en (5,0) para diagonal /
+                "CCTATT",
+                "GGCGCT"
         };
-        // Para simplificar y asegurar, usaremos un caso más sencillo con 2 secuencias claras:
+
         String[] dnaSimple = {
                 "ATGCGA",
-                "CAATGC", // A-A-A-A diagonal \ en (1,1)
+                "CAATGC",
                 "TTACGT",
                 "AGACGA",
-                "CCCCTA", // C-C-C-C horizontal
+                "CCCCTA",
                 "TCACTG"
         };
         assertTrue(mutantDetector.isMutant(dnaSimple));
@@ -95,7 +84,7 @@ class MutantDetectorTest {
     @DisplayName("Should return false for human DNA (only one sequence)")
     void isMutant_HumanOneSequence() {
         String[] dnaOne = {
-                "AAAAAT", // 1 sequence horizontal
+                "AAAATA",
                 "CAGTGC",
                 "TTATGT",
                 "AGAGAG",
@@ -127,7 +116,7 @@ class MutantDetectorTest {
                 "CAGTGC",
                 "TTATGT",
                 "AGAAGG",
-                "CCCCTX", // X is invalid
+                "CCCCTX",
                 "TCACTG"
         };
         assertThrows(IllegalArgumentException.class, () -> mutantDetector.isMutant(dna));
@@ -167,8 +156,8 @@ class MutantDetectorTest {
     @DisplayName("Should handle minimum size 4x4")
     void isMutant_MinSize() {
         String[] dna = {
-                "AAAA", // Secuencia 1
-                "CCCC", // Secuencia 2
+                "AAAA",
+                "CCCC",
                 "TTTT",
                 "GGGG"
         };

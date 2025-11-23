@@ -21,11 +21,7 @@ public class StatsService {
         if (humanCount > 0) {
             ratio = (double) mutantCount / humanCount;
         } else if (mutantCount > 0) {
-            // If there are no humans but there are mutants, ratio is technically infinite or undefined,
-            // but logically for this challenge, if we have mutants and 0 humans, the ratio is the mutant count
-            // according to the example in README?
-            // Example: "0 mutantes, 100 humanos -> ratio = 0.0"
-            // "40 mutantes, 0 humanos -> ratio = 40.0 (caso especial)"
+
             ratio = (double) mutantCount;
         }
 
