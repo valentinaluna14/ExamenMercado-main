@@ -9,8 +9,8 @@ group = 'org.example'
 version = '1.0-SNAPSHOT'
 
 java {
-    sourceCompatibility = '21' // <- Si usas JDK 21
-    targetCompatibility = '21' // <- Añadir targetCompatibility también
+    sourceCompatibility = '17'
+    targetCompatibility = '17'
 }
 
 repositories {
