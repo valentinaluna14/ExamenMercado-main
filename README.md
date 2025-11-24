@@ -1,4 +1,6 @@
 
+
+````markdown
 # 🧬 Mutant Detector API
 
 [![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://www.oracle.com/java/)
@@ -42,22 +44,24 @@ Un humano es **mutante** si se encuentran **más de una secuencia de cuatro letr
     "TCACTG"
   ]
 }
-🏗 Arquitectura y Diseño
+````
+
+-----
+
+## 🏗 Arquitectura y Diseño
+
 El proyecto sigue una arquitectura en capas clásica para asegurar la escalabilidad y mantenibilidad:
 
-Controller Layer: Maneja las peticiones HTTP.
+1.  **Controller Layer:** Maneja las peticiones HTTP.
+2.  **Service Layer:** Contiene la lógica de negocio (algoritmo de detección).
+3.  **Repository Layer:** Interactúa con la base de datos (H2).
+4.  **Model Layer:** Entidades y DTOs.
 
-Service Layer: Contiene la lógica de negocio (algoritmo de detección).
+### Diagrama de Secuencia (Flujo de Análisis)
 
-Repository Layer: Interactúa con la base de datos (H2).
+El siguiente diagrama muestra el flujo de una petición `POST /mutant`:
 
-Model Layer: Entidades y DTOs.
-
-Diagrama de Secuencia (Flujo de Análisis)
-El siguiente diagrama muestra el flujo de una petición POST /mutant:
-
-Fragmento de código
-
+```mermaid
 sequenceDiagram
     autonumber
     actor Cliente
@@ -117,100 +121,114 @@ sequenceDiagram
         Controller-->>Cliente: 403 Forbidden
     end
     deactivate Controller
-🛠 Tecnologías
-Lenguaje: Java 17
+```
 
-Framework: Spring Boot 3.2.0
+-----
 
-Build Tool: Gradle
+## 🛠 Tecnologías
 
-Base de Datos: H2 (In-memory)
+* **Lenguaje:** Java 17
+* **Framework:** Spring Boot 3.2.0
+* **Build Tool:** Gradle
+* **Base de Datos:** H2 (In-memory)
+* **Testing:** JUnit 5, Mockito, MockMvc
+* **Contenedorización:** Docker
+* **Documentación:** OpenAPI (Swagger)
 
-Testing: JUnit 5, Mockito, MockMvc
+-----
 
-Contenedorización: Docker
+## 📡 API Endpoints
 
-Documentación: OpenAPI (Swagger)
+### 1\. Detectar Mutante
 
-📡 API Endpoints
-1. Detectar Mutante
 Verifica si una secuencia de ADN corresponde a un mutante.
 
-URL: /mutant
+* **URL:** `/mutant`
+* **Método:** `POST`
+* **Body:**
+  ```json
+  {
+      "dna": ["ATGCGA","CAGTGC","TTATGT","AGAAGG","CCCCTA","TCACTG"]
+  }
+  ```
+* **Respuestas:**
+    * `200 OK`: Es mutante.
+    * `403 Forbidden`: Es humano.
+    * `400 Bad Request`: ADN inválido (caracteres erróneos, matriz no cuadrada, null).
 
-Método: POST
+### 2\. Estadísticas
 
-Body:
-
-JSON
-
-{
-    "dna": ["ATGCGA","CAGTGC","TTATGT","AGAAGG","CCCCTA","TCACTG"]
-}
-Respuestas:
-
-200 OK: Es mutante.
-
-403 Forbidden: Es humano.
-
-400 Bad Request: ADN inválido (caracteres erróneos, matriz no cuadrada, null).
-
-2. Estadísticas
 Devuelve estadísticas de las verificaciones realizadas.
 
-URL: /stats
+* **URL:** `/stats`
+* **Método:** `GET`
+* **Respuesta:**
+  ```json
+  {
+      "count_mutant_dna": 40,
+      "count_human_dna": 100,
+      "ratio": 0.4
+  }
+  ```
 
-Método: GET
+-----
 
-Respuesta:
+## 💻 Instalación y Ejecución Local
 
-JSON
+### Prerrequisitos
 
-{
-    "count_mutant_dna": 40,
-    "count_human_dna": 100,
-    "ratio": 0.4
-}
-💻 Instalación y Ejecución Local
-Prerrequisitos
-Java 17
+* Java 17
+* Git
 
-Git
+### Pasos
 
-Pasos
-Clonar el repositorio:
+1.  **Clonar el repositorio:**
 
-Bash
+    ```bash
+    git clone [https://github.com/valentinaluna14/ExamenMercado.git](https://github.com/valentinaluna14/ExamenMercado.git)
+    cd ExamenMercado
+    ```
 
-git clone [https://github.com/valentinaluna14/ExamenMercado.git](https://github.com/valentinaluna14/ExamenMercado.git)
-cd ExamenMercado
-Ejecutar la aplicación (Gradle):
+2.  **Ejecutar la aplicación (Gradle):**
 
-Bash
+    ```bash
+    ./gradlew bootRun
+    ```
 
-./gradlew bootRun
-Probar: Abrir http://localhost:8080/swagger-ui.html en tu navegador.
+3.  **Probar:**
+    Abrir `http://localhost:8080/swagger-ui.html` en tu navegador.
 
-Ejecutar con Docker
-Bash
+### Ejecutar con Docker
 
+```bash
 docker build -t mutant-api .
 docker run -p 8080:8080 mutant-api
-🧪 Testing y Cobertura
+```
+
+-----
+
+## 🧪 Testing y Cobertura
+
 El proyecto cuenta con una suite completa de tests unitarios y de integración.
 
-Tests Totales: 35+ tests.
-
-Cobertura de Código: 86% (Superando el objetivo del 80%).
+* **Tests Totales:** 35+ tests.
+* **Cobertura de Código:** 86% (Superando el objetivo del 80%).
 
 Para ejecutar los tests y ver el reporte de cobertura:
 
-Bash
-
+```bash
 ./gradlew test jacocoTestReport
-El reporte se generará en build/reports/jacoco/test/html/index.html.
+```
 
-📚 Referencia del Examen
+El reporte se generará en `build/reports/jacoco/test/html/index.html`.
+
+-----
+
+## 📚 Referencia del Examen
+
 El enunciado original, las guías de evaluación y las instrucciones detalladas para estudiantes proporcionadas por la cátedra se encuentran disponibles en el archivo:
 
-👉 GuiaCompletaEstudiantes.md
+👉 **[GuiaCompletaEstudiantes.md](https://www.google.com/search?q=GuiaCompletaEstudiantes.md)**
+
+````
+
