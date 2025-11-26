@@ -300,7 +300,7 @@ class MutantDetectorTest {
     void testNotMutantWithNullRow() {
         String[] dna = {
                 "ATGCGA",
-                null,  // Fila nula
+                null,
                 "TTATGT",
                 "AGAAGG",
                 "CCCCTA",

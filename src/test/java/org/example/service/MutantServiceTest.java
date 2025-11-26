@@ -75,15 +75,15 @@ class MutantServiceTest {
         when(repository.findByDnaHash(anyString())).thenReturn(Optional.empty());
         when(mutantDetector.isMutant(humanDna)).thenReturn(false);
 
-        // ACT
+
         boolean result = mutantService.analyzeDna(humanDna);
 
-        // ASSERT
+
         assertFalse(result, "Debe retornar false para humano");
         verify(mutantDetector, times(1)).isMutant(humanDna);
         verify(repository, times(1)).save(any(DnaRecord.class));
 
-        // Verificar que se guardó con isMutant = false
+
         ArgumentCaptor<DnaRecord> captor = ArgumentCaptor.forClass(DnaRecord.class);
         verify(repository).save(captor.capture());
         assertFalse(captor.getValue().isMutant(), "El registro guardado debe tener isMutant=false");
@@ -92,21 +92,21 @@ class MutantServiceTest {
     @Test
     @DisplayName("Should generate consistent hash for same DNA sequence")
     void testConsistentHashGeneration() {
-        // ARRANGE
+
         String[] dna = {"AAAA", "CCCC", "TTTT", "GGGG"};
 
         when(repository.findByDnaHash(anyString())).thenReturn(Optional.empty());
         when(mutantDetector.isMutant(any())).thenReturn(true);
 
-        // ACT - Analizar el mismo DNA dos veces
+
         mutantService.analyzeDna(dna);
         mutantService.analyzeDna(dna);
 
-        // ASSERT - Debe buscar por el mismo hash ambas veces
+
         ArgumentCaptor<String> hashCaptor = ArgumentCaptor.forClass(String.class);
         verify(repository, times(2)).findByDnaHash(hashCaptor.capture());
 
-        // Los dos hashes deben ser idénticos
+
         String firstHash = hashCaptor.getAllValues().get(0);
         String secondHash = hashCaptor.getAllValues().get(1);
 
@@ -119,7 +119,7 @@ class MutantServiceTest {
     @Test
     @DisplayName("Should save record with correct hash format (SHA-256)")
     void testSavesRecordWithCorrectHash() {
-        // ARRANGE
+
         String[] mutantDna = {
                 "ATGCGA",
                 "CAGTGC",
@@ -132,46 +132,46 @@ class MutantServiceTest {
         when(repository.findByDnaHash(anyString())).thenReturn(Optional.empty());
         when(mutantDetector.isMutant(mutantDna)).thenReturn(true);
 
-        // ACT
+
         mutantService.analyzeDna(mutantDna);
 
-        // ASSERT
+
         ArgumentCaptor<DnaRecord> recordCaptor = ArgumentCaptor.forClass(DnaRecord.class);
         verify(repository).save(recordCaptor.capture());
 
         DnaRecord savedRecord = recordCaptor.getValue();
 
-        // Verificar propiedades del hash
+
         assertNotNull(savedRecord.getDnaHash(), "Hash no debe ser null");
         assertEquals(64, savedRecord.getDnaHash().length(),
                 "Hash SHA-256 debe tener exactamente 64 caracteres");
         assertTrue(savedRecord.getDnaHash().matches("^[a-f0-9]{64}$"),
                 "Hash debe ser hexadecimal (solo caracteres a-f y 0-9)");
 
-        // Verificar que isMutant está correctamente asignado
+
         assertTrue(savedRecord.isMutant(), "isMutant debe ser true");
 
-        // Verificar que createdAt está asignado
+
         assertNotNull(savedRecord.getCreatedAt(), "createdAt no debe ser null");
     }
 
-    // ==================== TESTS ADICIONALES DE EDGE CASES ====================
+
 
     @Test
     @DisplayName("Should handle different DNA sequences producing different hashes")
     void testDifferentDnaProducesDifferentHash() {
-        // ARRANGE
+
         String[] dna1 = {"AAAA", "CCCC", "TTTT", "GGGG"};
         String[] dna2 = {"ATGC", "CGTA", "TACG", "GCAT"};
 
         when(repository.findByDnaHash(anyString())).thenReturn(Optional.empty());
         when(mutantDetector.isMutant(any())).thenReturn(true);
 
-        // ACT
+
         mutantService.analyzeDna(dna1);
         mutantService.analyzeDna(dna2);
 
-        // ASSERT
+
         ArgumentCaptor<String> hashCaptor = ArgumentCaptor.forClass(String.class);
         verify(repository, times(2)).findByDnaHash(hashCaptor.capture());
 
@@ -185,7 +185,7 @@ class MutantServiceTest {
     @Test
     @DisplayName("Should not call detector when result is cached (performance optimization)")
     void testCacheOptimization() {
-        // ARRANGE
+
         String[] dna = {"AAAA", "CCCC", "TTTT", "GGGG"};
         DnaRecord cachedRecord = new DnaRecord();
         cachedRecord.setDnaHash("somehash123");
@@ -193,13 +193,13 @@ class MutantServiceTest {
 
         when(repository.findByDnaHash(anyString())).thenReturn(Optional.of(cachedRecord));
 
-        // ACT
+
         boolean result = mutantService.analyzeDna(dna);
 
-        // ASSERT
+
         assertFalse(result, "Debe retornar false desde caché");
 
-        // Verificaciones de optimización
+
         verify(repository, times(1)).findByDnaHash(anyString());
         verify(mutantDetector, never()).isMutant(any()); // NO debe llamar al detector
         verify(repository, never()).save(any()); // NO debe guardar
@@ -208,7 +208,7 @@ class MutantServiceTest {
     @Test
     @DisplayName("Should handle repository save operation")
     void testRepositorySaveOperation() {
-        // ARRANGE
+
         String[] dna = {"ATGC", "CGTA", "TACG", "GCAT"};
 
         when(repository.findByDnaHash(anyString())).thenReturn(Optional.empty());
@@ -218,10 +218,10 @@ class MutantServiceTest {
         savedRecord.setId(1L);
         when(repository.save(any(DnaRecord.class))).thenReturn(savedRecord);
 
-        // ACT
+
         mutantService.analyzeDna(dna);
 
-        // ASSERT
+
         verify(repository, times(1)).save(any(DnaRecord.class));
     }
 }

@@ -18,7 +18,7 @@ public class MutantDetector {
 
         int sequenceCount = 0;
 
-        // Single pass iteration
+
         for (int row = 0; row < n; row++) {
             for (int col = 0; col < n; col++) {
 
