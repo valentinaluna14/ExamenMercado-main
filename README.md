@@ -63,62 +63,103 @@ El siguiente diagrama muestra el flujo de una petición `POST /mutant`:
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Cliente
+    actor Client as Cliente
     participant Controller as MutantController
     participant Service as MutantService
-    participant Repo as DnaRecordRepository
+    participant Stats as StatsService
     participant Detector as MutantDetector
+    participant Repo as DnaRecordRepository
     participant DB as H2 Database
 
-    Note over Cliente, Controller: Solicitud de análisis
-    Cliente->>Controller: POST /mutant {dna: [...]}
-    
+    Note over Client, DB: == Caso 1: ADN Nuevo (No existe en caché) ==
+
+    Client->>Controller: POST /mutant {dna: [...]}
     activate Controller
-    Controller->>Service: analyzeDna(dna)
     
+    Note right of Controller: @Validated (Validaciones DTO)
+    
+    Controller->>Service: analyzeDna(dna)
     activate Service
+    
     Note right of Service: 1. Calcular Hash (SHA-256)
     Service->>Service: calculateDnaHash(dna)
     
-    Note right of Service: 2. Verificar Caché (BD)
     Service->>Repo: findByDnaHash(hash)
     activate Repo
-    Repo->>DB: SELECT ... WHERE hash = ?
-    activate DB
-    DB-->>Repo: Resultado (Opcional)
-    deactivate DB
-    Repo-->>Service: existingRecord (Optional)
+    Repo-->>Service: Optional.empty()
     deactivate Repo
 
-    alt Ya fue analizado (Cache Hit)
-        Service-->>Controller: Retorna resultado guardado
-    else Es nuevo (Cache Miss)
-        Note right of Service: 3. Ejecutar Algoritmo
-        Service->>Detector: isMutant(dna)
-        activate Detector
-        Detector-->>Service: boolean isMutant
-        deactivate Detector
+    Note over Service: Cache Miss: Ejecutar Algoritmo
 
-        Note right of Service: 4. Guardar Resultado
-        Service->>Repo: save(new DnaRecord(...))
-        activate Repo
-        Repo->>DB: INSERT ...
-        activate DB
-        DB-->>Repo: Entity guardada
-        deactivate DB
-        Repo-->>Service: Entity guardada
-        deactivate Repo
-        
-        Service-->>Controller: Retorna nuevo resultado
-    end
+    Service->>Detector: isMutant(dna)
+    activate Detector
+    Note right of Detector: Optimización: char[][] y Early Termination
+    Detector-->>Service: true (es mutante)
+    deactivate Detector
+
+    Service->>Repo: save(new DnaRecord(...))
+    activate Repo
+    Repo->>DB: INSERT INTO dna_records...
+    activate DB
+    DB-->>Repo: OK
+    deactivate DB
+    Repo-->>Service: Entity guardada
+    deactivate Repo
+    
+    Service-->>Controller: true
     deactivate Service
+    
+    Controller-->>Client: 200 OK
+    deactivate Controller
 
-    Note over Controller, Cliente: Respuesta HTTP
-    alt Es Mutante (true)
-        Controller-->>Cliente: 200 OK
-    else Es Humano (false)
-        Controller-->>Cliente: 403 Forbidden
+    Note over Client, DB: == Caso 2: ADN Cacheado (Ya existe en BD) ==
+
+    Client->>Controller: POST /mutant {dna: [...]}
+    activate Controller
+    Controller->>Service: analyzeDna(dna)
+    activate Service
+    
+    Service->>Repo: findByDnaHash(hash)
+    activate Repo
+    Repo-->>Service: Optional.of(record)
+    deactivate Repo
+    
+    Note over Service: Cache Hit: Retornar sin recalcular
+    
+    Service-->>Controller: record.isMutant()
+    deactivate Service
+    
+    alt Es Mutante
+        Controller-->>Client: 200 OK
+    else Es Humano
+        Controller-->>Client: 403 Forbidden
     end
+    deactivate Controller
+
+    Note over Client, DB: == Caso 3: Obtener Estadísticas ==
+
+    Client->>Controller: GET /stats
+    activate Controller
+    
+    Controller->>Stats: getStats()
+    activate Stats
+    
+    Stats->>Repo: countByIsMutant(true)
+    activate Repo
+    Repo-->>Stats: 40
+    deactivate Repo
+    
+    Stats->>Repo: countByIsMutant(false)
+    activate Repo
+    Repo-->>Stats: 100
+    deactivate Repo
+    
+    Note right of Stats: Ratio = 40 / 100 = 0.4
+    
+    Stats-->>Controller: StatsResponse(40, 100, 0.4)
+    deactivate Stats
+    
+    Controller-->>Client: 200 OK {stats...}
     deactivate Controller
 ```
 
